@@ -1,0 +1,34 @@
+[build]
+command = "npm run build"
+publish = "dist" # "build"
+
+[dev]
+command = "npm run dev" 
+#targetPort = 9090 
+port = 4173 
+autoLaunch = false
+functionsPort = 9091
+
+[functions]
+node_bundler = "esbuild"
+external_node_modules = ['pg-native', 
+                         '@mikro-orm/mongodb', 
+                         '@mikro-orm/seeder', 
+                         '@mikro-orm/mysql', 
+                         '@mikro-orm/mariadb', 
+                         '@mikro-orm/sqlite', 
+                         '@mikro-orm/better-sqlite', 
+                         '@mikro-orm/entity-generator',
+                         '@mikro-orm/migrations',
+                         'better-sqlite3',
+                         'mysql2',
+                         'oracledb',
+                         'sqlite3', 
+                         'mysql',
+                         'tedious',
+                         'pg-query-stream']
+
+#included_files = [".env.local"]
+
+# [context.dev.environment]
+# VITE_SWIMIFIED_DEV_DATABASE_URL_RW = "swimified-db"
