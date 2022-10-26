@@ -1,38 +1,61 @@
-# create-svelte
+# Minimal Reproduction of Netlify Issue #4873
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+The observed issue is that when submitting a POST request,
+the request is directed to the back-end job instead of 
+the intended post handler.
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Run the following commands:
 
 ```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+npm install
+NODE_DEBUG=http npm run dev:netlify
 ```
 
-## Building
+## Reproducing the issue
+Open a browser to `http://localhost:4003`, click on link `Upload pet` and submit the form on the next page.
 
-To create a production version of your app:
+You will see the following errors on the server console:
 
-```bash
-npm run build
+```shell
+ ›   Warning: Missing form submission function handler
+Request from ::1: POST /home/pets/upload
+Response with status 404 in 1 ms.
+ ›   Warning: Missing form submission function handler
+Request from ::1: POST /home/pets/upload.html
+Response with status 404 in 0 ms.
+ ›   Warning: Missing form submission function handler
+Request from ::1: POST /home/pets/upload.htm
+Response with status 404 in 0 ms.
+ ›   Warning: Missing form submission function handler
+Request from ::1: POST /home/pets/upload/index.html
+Response with status 404 in 0 ms.
+ ›   Warning: Missing form submission function handler
+Request from ::1: POST /home/pets/upload/index.htm
+Response with status 404 in 0 ms.
 ```
 
-You can preview the production build with `npm run preview`.
+The node http debug shows the connection attempt to port 4004:
+```shell
+...
+HTTP 96144: createConnection 127.0.0.1:4004: [Object: null prototype] {
+  port: '4004',
+  host: '127.0.0.1',
+  hostname: '127.0.0.1',
+  socketPath: undefined,
+  pfx: undefined,
+  key: undefined,
+  passphrase: undefined,
+  cert: undefined,
+  ca: undefined,
+  ciphers: undefined,
+  secureProtocol: undefined,
+  method: 'POST',
+  headers: {
+    'x-forwarded-for': '::1',
+  ...
+```
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+The browser will show the message `Function not found...` instead of the intended result of redirecting you to the root URL.
+

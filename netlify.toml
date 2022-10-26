@@ -5,9 +5,9 @@ publish = "dist" # "build"
 [dev]
 command = "npm run dev" 
 #targetPort = 9090 
-port = 4173 
+port = 4003 
 autoLaunch = false
-functionsPort = 9091
+functionsPort = 4004
 
 [functions]
 node_bundler = "esbuild"
